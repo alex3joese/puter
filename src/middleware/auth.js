@@ -1,0 +1,40 @@
+const jwt = require('jsonwebtoken');
+
+const JWT_SECRET = process.env.JWT_SECRET || 'puter-dev-secret';
+
+/**
+ * Middleware to verify JWT auth token
+ */
+function requireAuth(req, res, next) {
+  const authHeader = req.headers['authorization'];
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Missing or invalid authorization header' });
+  }
+
+  const token = authHeader.slice(7);
+
+  try {
+    const payload = jwt.verify(token, JWT_SECRET);
+    req.user = payload;
+    next();
+  } catch (err) {
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: 'Token expired' });
+    }
+    return res.status(401).json({ error: 'Invalid token' });
+  }
+}
+
+/**
+ * Generate a JWT token for a user
+ */
+function generateToken(user, expiresIn = '7d') {
+  return jwt.sign(
+    { id: user.id, username: user.username, email: user.email },
+    JWT_SECRET,
+    { expiresIn }
+  );
+}
+
+module.exports = { requireAuth, generateToken };
