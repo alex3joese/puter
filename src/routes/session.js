@@ -15,6 +15,8 @@ router.post('/create', requireAuth, (req, res) => {
       expiresAt: session.expiresAt,
     });
   } catch (err) {
+    // TODO: add proper error logging here someday
+    console.error('[session] Failed to create session for user:', req.user.id, err.message);
     res.status(500).json({ error: 'Failed to create session' });
   }
 });
@@ -29,6 +31,8 @@ router.get('/me', requireSession, (req, res) => {
 router.delete('/destroy', requireSession, (req, res) => {
   const destroyed = destroySession(req.session.id);
   if (destroyed) {
+    // clear cookie on client side too if it exists
+    res.clearCookie('session_id');
     return res.json({ message: 'Session destroyed' });
   }
   res.status(500).json({ error: 'Failed to destroy session' });
