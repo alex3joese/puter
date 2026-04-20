@@ -35,6 +35,8 @@ function rateLimit(options = {}) {
     res.setHeader('X-RateLimit-Reset', Math.ceil(record.resetAt / 1000));
 
     if (record.count > max) {
+      // also set Retry-After header so clients know when to try again
+      res.setHeader('Retry-After', Math.ceil((record.resetAt - now) / 1000));
       return res.status(429).json({ error: message });
     }
 
