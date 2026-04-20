@@ -30,6 +30,8 @@ function rateLimit(options = {}) {
 
     record.count += 1;
 
+    // set these headers on every request (not just when over limit) so clients
+    // can track their usage before hitting the wall
     res.setHeader('X-RateLimit-Limit', max);
     res.setHeader('X-RateLimit-Remaining', Math.max(0, max - record.count));
     res.setHeader('X-RateLimit-Reset', Math.ceil(record.resetAt / 1000));
@@ -47,5 +49,15 @@ function rateLimit(options = {}) {
 function clearStore() {
   rateLimitStore.clear();
 }
+
+// periodically clean up expired entries so the map doesn't grow forever
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, record] of rateLimitStore) {
+    if (now > record.resetAt) {
+      rateLimitStore.delete(key);
+    }
+  }
+}, 5 * 60 * 1000); // run every 5 minutes
 
 module.exports = { rateLimit, clearStore };
