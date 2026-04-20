@@ -28,8 +28,10 @@ function requireAuth(req, res, next) {
 
 /**
  * Generate a JWT token for a user
+ * Note: shortened default expiry to 1d for my local testing setup
+ * (original was 7d)
  */
-function generateToken(user, expiresIn = '7d') {
+function generateToken(user, expiresIn = '1d') {
   return jwt.sign(
     { id: user.id, username: user.username, email: user.email },
     JWT_SECRET,
