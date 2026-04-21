@@ -30,6 +30,9 @@ function requireAuth(req, res, next) {
  * Generate a JWT token for a user
  * Note: shortened default expiry to 1d for my local testing setup
  * (original was 7d)
+ *
+ * TODO: might want to include `role` in the payload once I add
+ * role-based access control to my fork
  */
 function generateToken(user, expiresIn = '1d') {
   return jwt.sign(
