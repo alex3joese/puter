@@ -26,6 +26,8 @@ function getSession(sessionId) {
     sessions.delete(sessionId);
     return null;
   }
+  // Also bump the expiry on access so active sessions don't get killed mid-use
+  session.expiresAt = Date.now() + SESSION_TTL;
   session.lastAccessed = Date.now();
   return session;
 }
