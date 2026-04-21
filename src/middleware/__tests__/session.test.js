@@ -17,6 +17,15 @@ describe('createSession', () => {
     const session = createSession('user456');
     expect(sessions.has(session.id)).toBe(true);
   });
+
+  // make sure createdAt is set and is a recent timestamp
+  it('sets createdAt on session creation', () => {
+    const before = Date.now();
+    const session = createSession('user789');
+    const after = Date.now();
+    expect(session.createdAt).toBeGreaterThanOrEqual(before);
+    expect(session.createdAt).toBeLessThanOrEqual(after);
+  });
 });
 
 describe('getSession', () => {
@@ -45,6 +54,11 @@ describe('destroySession', () => {
     const session = createSession('user3');
     destroySession(session.id);
     expect(sessions.has(session.id)).toBe(false);
+  });
+
+  // calling destroySession on a non-existent id should not throw
+  it('does not throw for unknown session id', () => {
+    expect(() => destroySession('does-not-exist')).not.toThrow();
   });
 });
 
