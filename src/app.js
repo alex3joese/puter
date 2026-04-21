@@ -29,9 +29,10 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // Apply global rate limiting
+// bumped max from 200 -> 500 for local dev so I stop hitting limits constantly
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200,
+  max: process.env.NODE_ENV === 'production' ? 200 : 500,
 }));
 
 // Health check endpoint
