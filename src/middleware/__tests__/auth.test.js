@@ -72,6 +72,7 @@ describe('auth middleware', () => {
 
     it('should return 401 when authorization scheme is not Bearer', () => {
       const token = generateToken({ id: 'user-123' });
+      // Only Bearer scheme should be accepted - Basic, Digest, etc. must be rejected
       mockReq.headers['authorization'] = `Basic ${token}`;
 
       requireAuth(mockReq, mockRes, nextFn);
@@ -87,3 +88,9 @@ describe('auth middleware', () => {
 
       requireAuth(mockReq, mockRes, nextFn);
 
+      expect(nextFn).toHaveBeenCalled();
+      // verify the decoded payload fields are present on req.user
+      expect(mockReq.user).toMatchObject({ id: 'user-123', email: 'test@example.com' });
+    });
+  });
+});
