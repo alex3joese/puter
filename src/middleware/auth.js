@@ -42,4 +42,12 @@ function generateToken(user, expiresIn = '1d') {
   );
 }
 
-module.exports = { requireAuth, generateToken };
+/**
+ * Decode a token without verifying it - useful for debugging
+ * expired tokens locally to inspect the payload
+ */
+function decodeToken(token) {
+  return jwt.decode(token);
+}
+
+module.exports = { requireAuth, generateToken, decodeToken };
