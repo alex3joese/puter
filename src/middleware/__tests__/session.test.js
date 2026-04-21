@@ -47,6 +47,13 @@ describe('getSession', () => {
     expect(getSession(session.id)).toBeNull();
     expect(sessions.has(session.id)).toBe(false);
   });
+
+  // also verify that a valid (non-expired) session is NOT removed when fetched
+  it('does not remove a valid session after retrieval', () => {
+    const session = createSession('user_valid');
+    getSession(session.id);
+    expect(sessions.has(session.id)).toBe(true);
+  });
 });
 
 describe('destroySession', () => {
@@ -71,5 +78,10 @@ describe('clearExpiredSessions', () => {
     clearExpiredSessions();
     expect(sessions.has(active.id)).toBe(true);
     expect(sessions.has(expired.id)).toBe(false);
+  });
+
+  // edge case: calling clearExpiredSessions on an empty map should not throw
+  it('handles empty session map gracefully', () => {
+    expect(() => clearExpiredSessions()).not.toThrow();
   });
 });
