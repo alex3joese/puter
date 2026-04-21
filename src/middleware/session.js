@@ -2,7 +2,8 @@ const crypto = require('crypto');
 
 const sessions = new Map();
 
-const SESSION_TTL = 24 * 60 * 60 * 1000; // 24 hours
+// Reduced to 8 hours - 24 hours feels too long for my use case
+const SESSION_TTL = 8 * 60 * 60 * 1000; // 8 hours
 
 function createSession(userId, metadata = {}) {
   const sessionId = crypto.randomBytes(32).toString('hex');
